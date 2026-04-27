@@ -64,6 +64,35 @@ if os.path.exists(ML_MODEL_PATH):
     except Exception as e:
         print(f"Error loading ML model: {e}")
 
+class ChatInput(BaseModel):
+    message: str
+
+class ChatResponse(BaseModel):
+    response: str
+
+def get_chatbot_response(user_message: str) -> str:
+    """
+    Simplified chatbot logic based on keyword matching.
+    """
+    msg = user_message.lower()
+    
+    if "électricité" in msg or "electricity" in msg or "courant" in msg:
+        return "Pour réduire votre consommation d'électricité, débranchez les appareils en veille et passez aux ampoules LED !"
+    
+    if "eau" in msg or "water" in msg or "douche" in msg:
+        return "Une douche de 5 minutes consomme environ 60L d'eau. Installer un mousseur peut réduire cela de 50% !"
+    
+    if "recyclage" in msg or "tri" in msg or "déchet" in msg:
+        return "Le tri sélectif est crucial. Séparez bien le verre, le plastique et le papier pour faciliter le recyclage."
+    
+    if "score" in msg or "calcul" in msg:
+        return "Votre Eco Score est calculé par notre modèle de Machine Learning basé sur vos données de consommation mensuelle."
+    
+    if "bonjour" in msg or "hello" in msg or "salut" in msg:
+        return "Bonjour ! Je suis l'assistant GreenLife. Comment puis-je vous aider à réduire votre impact écologique ?"
+        
+    return "Je n'ai pas bien compris, mais je suis là pour vous aider avec vos questions sur l'écologie et votre score GreenLife !"
+
 def analyze_consumption(data: ConsumptionInput) -> AnalysisResult:
     """
     Main function that:

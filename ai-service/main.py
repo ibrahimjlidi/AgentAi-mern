@@ -14,7 +14,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Import our data models and analysis function from model.py
-from model import ConsumptionInput, AnalysisResult, analyze_consumption
+from model import ConsumptionInput, AnalysisResult, ChatInput, ChatResponse, analyze_consumption, get_chatbot_response
 
 # -----------------------------------------------------------
 # Initialize the FastAPI application
@@ -72,3 +72,11 @@ def analyze(data: ConsumptionInput):
     # Delegate to our analysis function in model.py
     result = analyze_consumption(data)
     return result
+
+@app.post("/chat", response_model=ChatResponse)
+def chat(data: ChatInput):
+    """
+    Endpoint for the GreenLife Chatbot.
+    """
+    response_text = get_chatbot_response(data.message)
+    return ChatResponse(response=response_text)

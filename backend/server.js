@@ -18,6 +18,7 @@ const mongoose = require("mongoose");
 
 // Import the analyze route (POST /api/analyze)
 const analyzeRoute = require("./routes/analyze");
+const chatRoute = require("./routes/chat");
 
 // -----------------------------------------------------------
 // Initialize Express App
@@ -64,6 +65,7 @@ app.get("/", (req, res) => {
 // Main analysis route — delegates to routes/analyze.js
 // Full path: POST http://localhost:5000/api/analyze
 app.use("/api/analyze", analyzeRoute);
+app.use("/api/chat", chatRoute);
 
 // -----------------------------------------------------------
 // 404 Handler — catches any unknown routes

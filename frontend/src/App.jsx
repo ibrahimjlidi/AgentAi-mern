@@ -10,6 +10,7 @@
 
 import React from "react";
 import Dashboard from "./components/Dashboard";
+import Chatbot from "./components/Chatbot";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
           sustainable future.
         </p>
       </footer>
+      <Chatbot />
     </div>
   );
 }
