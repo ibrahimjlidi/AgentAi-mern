@@ -64,6 +64,15 @@ if os.path.exists(ML_MODEL_PATH):
     except Exception as e:
         print(f"Error loading ML model: {e}")
 
+# Load the trained NLP Chatbot model
+chatbot_model = None
+try:
+    if os.path.exists("chatbot_model.pkl"):
+        chatbot_model = joblib.load("chatbot_model.pkl")
+        print("Successfully loaded Chatbot NLP model!")
+except Exception as e:
+    print(f"Error loading Chatbot model: {e}")
+
 class ChatInput(BaseModel):
     message: str
 
@@ -72,39 +81,35 @@ class ChatResponse(BaseModel):
 
 def get_chatbot_response(user_message: str) -> str:
     """
-    Improved chatbot logic with more keywords and synonyms.
+    Intelligent chatbot using a trained NLP Intent Classifier.
     """
-    msg = user_message.lower()
-    
-    # Electricity
-    if any(k in msg for k in ["élec", "elec", "courant", "lumière", "ampoule", "watt"]):
-        return "Pour réduire votre électricité : éteignez les lumières inutiles, utilisez des ampoules LED et débranchez les chargeurs inutilisés !"
-    
-    # Water
-    if any(k in msg for k in ["eau", "water", "douche", "bain", "robinet", "litre"]):
-        return "L'eau est précieuse ! Privilégiez les douches courtes (5 min) aux bains, et réparez les fuites rapidement."
-    
-    # Recycling
-    if any(k in msg for k in ["recycl", "tri", "déchet", "poubelle", "plastique", "verre"]):
-        return "Le tri permet de donner une seconde vie à vos objets. Séparez le plastique, le papier et le verre dans les bacs appropriés."
-    
-    # How much / Calculations
-    if any(k in msg for k in ["combien", "combian", "score", "calcul", "résultat", "%", "pourcent"]):
-        return "Votre Eco Score est calculé par notre Intelligence Artificielle en analysant vos données. Plus vous consommez peu, plus votre score monte !"
-    
-    # Why?
-    if any(k in msg for k in ["pourquoi", "raison", "utilité"]):
-        return "GreenLife vous aide à comprendre votre impact environnemental pour agir concrètement pour la planète."
-    
-    # Greetings
-    if any(k in msg for k in ["bonjour", "hello", "salut", "hi", "coucou"]):
-        return "Bonjour ! Je suis l'assistant GreenLife. Je peux vous conseiller sur l'électricité, l'eau ou le recyclage. Que voulez-vous savoir ?"
+    if chatbot_model is None:
+        return "L'assistant intelligent est en cours de maintenance. Essayez plus tard !"
 
-    # Specific values
-    if any(char.isdigit() for char in msg):
-        return "Je vois des chiffres ! S'agit-il de votre consommation ? Entrez-les dans le formulaire en haut pour obtenir une analyse précise par mon modèle ML."
+    msg = user_message.strip()
+    if not msg:
+        return "Dites-moi quelque chose ! Je suis là pour vous aider."
+
+    # Predict the intent using the NLP model
+    try:
+        prediction = chatbot_model.predict([msg])
+        intent = prediction[0]
         
-    return "Je ne suis pas sûr de comprendre... Essayez de me parler d'électricité, d'eau ou de votre score !"
+        # Responses based on the detected intent
+        responses = {
+            "greeting": "Bonjour ! Je suis l'assistant GreenLife. Comment puis-je vous aider aujourd'hui ?",
+            "electricity": "Pour réduire votre électricité : éteignez les lumières inutiles, utilisez des ampoules LED et débranchez les chargeurs.",
+            "water": "L'eau est précieuse ! Privilégiez les douches courtes aux bains et réparez les fuites rapidement.",
+            "recycling": "Le tri permet de donner une seconde vie à vos objets. Séparez le plastique, le papier et le verre.",
+            "score": "Votre Eco Score est calculé par notre IA en analysant vos données de consommation. Plus vous économisez, plus il grimpe !",
+            "about": "GreenLife est un projet dédié à la réduction de l'empreinte environnementale grâce à la technologie et l'IA."
+        }
+        
+        return responses.get(intent, "Je ne suis pas sûr de comprendre... Essayez de me parler d'électricité, d'eau ou de votre score !")
+        
+    except Exception as e:
+        print(f"Chatbot inference error: {e}")
+        return "Oups, j'ai eu un petit bug en réfléchissant. Pouvez-vous répéter ?"
 
 def analyze_consumption(data: ConsumptionInput) -> AnalysisResult:
     """
