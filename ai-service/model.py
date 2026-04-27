@@ -72,26 +72,39 @@ class ChatResponse(BaseModel):
 
 def get_chatbot_response(user_message: str) -> str:
     """
-    Simplified chatbot logic based on keyword matching.
+    Improved chatbot logic with more keywords and synonyms.
     """
     msg = user_message.lower()
     
-    if "électricité" in msg or "electricity" in msg or "courant" in msg:
-        return "Pour réduire votre consommation d'électricité, débranchez les appareils en veille et passez aux ampoules LED !"
+    # Electricity
+    if any(k in msg for k in ["élec", "elec", "courant", "lumière", "ampoule", "watt"]):
+        return "Pour réduire votre électricité : éteignez les lumières inutiles, utilisez des ampoules LED et débranchez les chargeurs inutilisés !"
     
-    if "eau" in msg or "water" in msg or "douche" in msg:
-        return "Une douche de 5 minutes consomme environ 60L d'eau. Installer un mousseur peut réduire cela de 50% !"
+    # Water
+    if any(k in msg for k in ["eau", "water", "douche", "bain", "robinet", "litre"]):
+        return "L'eau est précieuse ! Privilégiez les douches courtes (5 min) aux bains, et réparez les fuites rapidement."
     
-    if "recyclage" in msg or "tri" in msg or "déchet" in msg:
-        return "Le tri sélectif est crucial. Séparez bien le verre, le plastique et le papier pour faciliter le recyclage."
+    # Recycling
+    if any(k in msg for k in ["recycl", "tri", "déchet", "poubelle", "plastique", "verre"]):
+        return "Le tri permet de donner une seconde vie à vos objets. Séparez le plastique, le papier et le verre dans les bacs appropriés."
     
-    if "score" in msg or "calcul" in msg:
-        return "Votre Eco Score est calculé par notre modèle de Machine Learning basé sur vos données de consommation mensuelle."
+    # How much / Calculations
+    if any(k in msg for k in ["combien", "combian", "score", "calcul", "résultat", "%", "pourcent"]):
+        return "Votre Eco Score est calculé par notre Intelligence Artificielle en analysant vos données. Plus vous consommez peu, plus votre score monte !"
     
-    if "bonjour" in msg or "hello" in msg or "salut" in msg:
-        return "Bonjour ! Je suis l'assistant GreenLife. Comment puis-je vous aider à réduire votre impact écologique ?"
+    # Why?
+    if any(k in msg for k in ["pourquoi", "raison", "utilité"]):
+        return "GreenLife vous aide à comprendre votre impact environnemental pour agir concrètement pour la planète."
+    
+    # Greetings
+    if any(k in msg for k in ["bonjour", "hello", "salut", "hi", "coucou"]):
+        return "Bonjour ! Je suis l'assistant GreenLife. Je peux vous conseiller sur l'électricité, l'eau ou le recyclage. Que voulez-vous savoir ?"
+
+    # Specific values
+    if any(char.isdigit() for char in msg):
+        return "Je vois des chiffres ! S'agit-il de votre consommation ? Entrez-les dans le formulaire en haut pour obtenir une analyse précise par mon modèle ML."
         
-    return "Je n'ai pas bien compris, mais je suis là pour vous aider avec vos questions sur l'écologie et votre score GreenLife !"
+    return "Je ne suis pas sûr de comprendre... Essayez de me parler d'électricité, d'eau ou de votre score !"
 
 def analyze_consumption(data: ConsumptionInput) -> AnalysisResult:
     """
