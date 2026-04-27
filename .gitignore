@@ -9,7 +9,6 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 model.pkl
-dataset.csv
 
 # IDEs
 .vscode/
